@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Om Reveal · MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600&family=Tiro+Devanagari+Sanskrit&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1 class="title">ॐ</h1>
+  <p class="instructions">Chant a long, steady Om. Steadiness reveals the image; the silence after each Om completes it.</p>
+
+  <div class="stage">
+    <canvas id="artwork" width="900" height="900" aria-label="Image revealed by chanting"></canvas>
+    <div id="voice-halo"></div>
+  </div>
+
+  <div id="status" role="status">Press Start and allow the microphone.</div>
+  <div class="clarity-track" aria-hidden="true"><div id="clarity-fill"></div></div>
+  <div id="chant-feedback"></div>
+
+  <div class="controls">
+    <button id="start-button" class="button">Start</button>
+    <button id="reset-button" class="button secondary" disabled>Reset</button>
+    <label class="button secondary">Use my image<input type="file" id="image-input" accept="image/*"></label>
+  </div>
+
+  <details id="readout">
+    <summary>Signal readout (for tuning)</summary>
+    <div class="readout-grid">
+      <span>Level</span>          <div class="level-track"><div id="level-fill"></div><div id="level-threshold"></div></div>
+      <span>Chanting</span>       <output id="readout-chanting">—</output>
+      <span>Pitch</span>          <output id="readout-pitch">—</output>
+      <span>Steadiness</span>     <output id="readout-steadiness">—</output>
+      <span>Centroid</span>       <output id="readout-centroid">—</output>
+      <span>Low-band ratio</span> <output id="readout-low-band">—</output>
+      <span>Phase (rough)</span>  <output id="readout-phase">—</output>
+      <span>Noise floor</span>    <output id="readout-noise">—</output>
+    </div>
+  </details>
+
+<script src="script.js"></script>
+</body>
+</html>
