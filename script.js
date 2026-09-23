@@ -18,41 +18,41 @@
 /* ── Settings ────────────────────────────────────────────────────────────── */
 
 const LISTENING = {
-  pitchRangeHz:           { min: 65, max: 500 },
-  pitchConfidenceMin:     0.6,    // periodicity (0–1) needed to trust a pitch
-  pitchHistoryFrames:     20,     // ≈ 0.33 s at 60 fps
-  pitchHistoryMinFrames:  8,
-  wobbleLimitCents:       40,     // pitch spread at which steadiness reaches 0
+  pitchRangeHz: { min: 65, max: 500 },
+  pitchConfidenceMin: 0.6,    // periodicity (0–1) needed to trust a pitch
+  pitchHistoryFrames: 20,     // ≈ 0.33 s at 60 fps
+  pitchHistoryMinFrames: 8,
+  wobbleLimitCents: 40,     // pitch spread at which steadiness reaches 0
 
-  onsetDelayMs:           120,    // voice must last this long to start a chant
-  releaseDelayMs:         300,    // silence must last this long to end one
+  onsetDelayMs: 120,    // voice must last this long to start a chant
+  releaseDelayMs: 300,    // silence must last this long to end one
 
-  calibrationMs:          1500,
-  noisePercentile:        0.9,
-  thresholdOverNoise:     3,
-  thresholdMin:           0.006,  // RMS floor, in case calibration was near-silent
+  calibrationMs: 1500,
+  noisePercentile: 0.9,
+  thresholdOverNoise: 3,
+  thresholdMin: 0.006,  // RMS floor, in case calibration was near-silent
 };
 
 const REVEAL = {
-  clarityPerSteadySecond:  0.045,
-  steadinessEmphasis:      1.5,   // > 1 favours very steady tone over merely steady
-  silenceRewardPerChant:   0.05,  // scaled by that chant's steadiness
-  silenceRewardPerSecond:  0.06,
+  clarityPerSteadySecond: 0.045,
+  steadinessEmphasis: 1.5,   // > 1 favours very steady tone over merely steady
+  silenceRewardPerChant: 0.05,  // scaled by that chant's steadiness
+  silenceRewardPerSecond: 0.06,
 
-  chantMinSeconds:         1.5,
-  chantMinSteadiness:      0.4,
-  feedbackMinSeconds:      0.4,   // shorter sounds are ignored, not critiqued
+  chantMinSeconds: 1.5,
+  chantMinSteadiness: 0.4,
+  feedbackMinSeconds: 0.4,   // shorter sounds are ignored, not critiqued
 };
 
 const LOOK = {
-  maxBlurPx:               28,
-  darkestBrightness:       0.35,
-  clarityEasePerSecond:    4,
-  haloEasePerSecond:       10,
-  haloFloor:               0.15,
-  haloFullAtThresholds:    10,    // loudness, in multiples of the voice threshold
+  maxBlurPx: 28,
+  darkestBrightness: 0.35,
+  clarityEasePerSecond: 4,
+  haloEasePerSecond: 10,
+  haloFloor: 0.15,
+  haloFullAtThresholds: 10,    // loudness, in multiples of the voice threshold
   readoutFullAtThresholds: 12,
-  phaseGuess:              { nasalLowBandRatio: 0.8, openCentroidHz: 1100 },
+  phaseGuess: { nasalLowBandRatio: 0.8, openCentroidHz: 1100 },
 };
 
 
@@ -61,25 +61,25 @@ const LOOK = {
 const byId = id => document.getElementById(id);
 
 const ui = {
-  artwork:       byId('artwork'),
-  voiceHalo:     byId('voice-halo'),
-  status:        byId('status'),
-  clarityFill:   byId('clarity-fill'),
+  artwork: byId('artwork'),
+  voiceHalo: byId('voice-halo'),
+  status: byId('status'),
+  clarityFill: byId('clarity-fill'),
   chantFeedback: byId('chant-feedback'),
-  startButton:   byId('start-button'),
-  resetButton:   byId('reset-button'),
-  imageInput:    byId('image-input'),
+  startButton: byId('start-button'),
+  resetButton: byId('reset-button'),
+  imageInput: byId('image-input'),
   readout: {
-    panel:          byId('readout'),
-    levelFill:      byId('level-fill'),
+    panel: byId('readout'),
+    levelFill: byId('level-fill'),
     levelThreshold: byId('level-threshold'),
-    chanting:       byId('readout-chanting'),
-    pitch:          byId('readout-pitch'),
-    steadiness:     byId('readout-steadiness'),
-    centroid:       byId('readout-centroid'),
-    lowBand:        byId('readout-low-band'),
-    phase:          byId('readout-phase'),
-    noise:          byId('readout-noise'),
+    chanting: byId('readout-chanting'),
+    pitch: byId('readout-pitch'),
+    steadiness: byId('readout-steadiness'),
+    centroid: byId('readout-centroid'),
+    lowBand: byId('readout-low-band'),
+    phase: byId('readout-phase'),
+    noise: byId('readout-noise'),
   },
 };
 
@@ -98,14 +98,14 @@ async function startSession() {
     session = {
       microphone,
       noiseFloor,
-      voiceThreshold:    Math.max(noiseFloor * LISTENING.thresholdOverNoise, LISTENING.thresholdMin),
-      steadiness:        new SteadinessTracker(),
-      chants:            new ChantDetector(),
-      reveal:            new Reveal(),
-      displayedClarity:  0,
-      haloLevel:         0,
+      voiceThreshold: Math.max(noiseFloor * LISTENING.thresholdOverNoise, LISTENING.thresholdMin),
+      steadiness: new SteadinessTracker(),
+      chants: new ChantDetector(),
+      reveal: new Reveal(),
+      displayedClarity: 0,
+      haloLevel: 0,
       announcedComplete: false,
-      lastFrameAt:       performance.now(),
+      lastFrameAt: performance.now(),
     };
 
     ui.resetButton.disabled = false;
@@ -135,7 +135,7 @@ function onFrame(now) {
   else session.reveal.payReward(elapsedSeconds);
 
   session.displayedClarity = approach(session.displayedClarity, session.reveal.clarity, LOOK.clarityEasePerSecond * elapsedSeconds);
-  session.haloLevel        = approach(session.haloLevel, haloTarget(voice), LOOK.haloEasePerSecond * elapsedSeconds);
+  session.haloLevel = approach(session.haloLevel, haloTarget(voice), LOOK.haloEasePerSecond * elapsedSeconds);
 
   renderArtwork(session.displayedClarity);
   renderHalo(session.haloLevel);
@@ -179,7 +179,7 @@ async function openMicrophone() {
   return {
     sampleRate: context.sampleRate,
     binWidthHz: context.sampleRate / analyser.fftSize,
-    readWaveform()   { analyser.getFloatTimeDomainData(waveform); return waveform; },
+    readWaveform() { analyser.getFloatTimeDomainData(waveform); return waveform; },
     readSpectrumDb() { analyser.getFloatFrequencyData(spectrumDb); return spectrumDb; },
   };
 }
@@ -201,7 +201,7 @@ function readVoice(microphone, voiceThreshold) {
   const waveform = microphone.readWaveform();
   const loudness = rootMeanSquare(waveform);
   const isVoiced = loudness > voiceThreshold;
-  const pitchHz  = isVoiced ? estimatePitchHz(waveform, microphone.sampleRate) : 0;
+  const pitchHz = isVoiced ? estimatePitchHz(waveform, microphone.sampleRate) : 0;
   return { loudness, isVoiced, pitchHz };
 }
 
@@ -216,7 +216,7 @@ let periodicityByLag = new Float32Array(0);
 
 function estimatePitchHz(waveform, sampleRate) {
   const shortestLag = Math.floor(sampleRate / LISTENING.pitchRangeHz.max);
-  const longestLag  = Math.min(Math.floor(sampleRate / LISTENING.pitchRangeHz.min), waveform.length - 2);
+  const longestLag = Math.min(Math.floor(sampleRate / LISTENING.pitchRangeHz.min), waveform.length - 2);
   if (periodicityByLag.length < longestLag + 2) periodicityByLag = new Float32Array(longestLag + 2);
 
   let strongest = 0;
@@ -319,7 +319,7 @@ class ChantDetector {
   #end(now) {
     this.isChanting = false;
     return {
-      seconds:    (now - this.#startedAt - this.#silentMs) / 1000,
+      seconds: (now - this.#startedAt - this.#silentMs) / 1000,
       steadiness: average(this.#steadinessSamples),
     };
   }
@@ -332,9 +332,9 @@ function earnsReward(chant) {
 function describeChant(chant, rewardedCount) {
   const seconds = chant.seconds.toFixed(1);
   const steadiness = asPercent(chant.steadiness);
-  if (earnsReward(chant))                        return `Om ${rewardedCount}: ${seconds} s, steadiness ${steadiness}%`;
+  if (earnsReward(chant)) return `Om ${rewardedCount}: ${seconds} s, steadiness ${steadiness}%`;
   if (chant.seconds < REVEAL.feedbackMinSeconds) return null;
-  if (chant.seconds < REVEAL.chantMinSeconds)    return `That one was ${seconds} s. Hold it a little longer.`;
+  if (chant.seconds < REVEAL.chantMinSeconds) return `That one was ${seconds} s. Hold it a little longer.`;
   return `Steadiness ${steadiness}%. Try holding one even pitch.`;
 }
 
@@ -409,11 +409,11 @@ function renderReadout(voice) {
   if (!r.panel.open) return;
 
   const fullScale = session.voiceThreshold * LOOK.readoutFullAtThresholds;
-  r.levelFill.style.width     = `${clamp(voice.loudness / fullScale, 0, 1) * 100}%`;
+  r.levelFill.style.width = `${clamp(voice.loudness / fullScale, 0, 1) * 100}%`;
   r.levelThreshold.style.left = `${clamp(session.voiceThreshold / fullScale, 0, 1) * 100}%`;
-  r.chanting.textContent      = session.chants.isChanting ? 'yes' : 'no';
-  r.pitch.textContent         = voice.pitchHz ? `${voice.pitchHz.toFixed(1)} Hz` : '—';
-  r.noise.textContent         = `${session.noiseFloor.toFixed(4)} RMS`;
+  r.chanting.textContent = session.chants.isChanting ? 'yes' : 'no';
+  r.pitch.textContent = voice.pitchHz ? `${voice.pitchHz.toFixed(1)} Hz` : '—';
+  r.noise.textContent = `${session.noiseFloor.toFixed(4)} RMS`;
 
   if (!voice.isVoiced) {
     r.steadiness.textContent = r.centroid.textContent = r.lowBand.textContent = r.phase.textContent = '—';
@@ -421,9 +421,9 @@ function renderReadout(voice) {
   }
   const spectrum = describeSpectrum(session.microphone.readSpectrumDb(), session.microphone.binWidthHz);
   r.steadiness.textContent = `${asPercent(session.steadiness.value)}%`;
-  r.centroid.textContent   = `${Math.round(spectrum.centroidHz)} Hz`;
-  r.lowBand.textContent    = spectrum.lowBandRatio.toFixed(2);
-  r.phase.textContent      = guessPhase(spectrum);
+  r.centroid.textContent = `${Math.round(spectrum.centroidHz)} Hz`;
+  r.lowBand.textContent = spectrum.lowBandRatio.toFixed(2);
+  r.phase.textContent = guessPhase(spectrum);
 }
 
 // Where the energy sits, and how much of it is low. A nasal M concentrates energy below 500 Hz.
@@ -438,7 +438,7 @@ function describeSpectrum(spectrumDb, binWidthHz, upperHz = 4000, lowBandHz = 50
     if (bin < lowBandBin) lowBand += magnitude;
   }
   return {
-    centroidHz:   total ? weightedHz / total : 0,
+    centroidHz: total ? weightedHz / total : 0,
     lowBandRatio: total ? lowBand / total : 0,
   };
 }
@@ -473,7 +473,7 @@ function drawMandala(canvas) {
   pen.translate(centre, centre);
   drawRays(pen, 72, size);
   drawPetalRing(pen, { count: 16, radius: 262, length: 74, width: 30, fill: c.outerPetal });
-  drawPetalRing(pen, { count: 8,  radius: 182, length: 64, width: 36, fill: c.innerPetal, turn: Math.PI / 8 });
+  drawPetalRing(pen, { count: 8, radius: 182, length: 64, width: 36, fill: c.innerPetal, turn: Math.PI / 8 });
   drawDisc(pen, 124);
   drawBeadRing(pen, { count: 48, radius: 345, beadRadius: 6 });
   drawSyllable(pen, 'ॐ', 160);
